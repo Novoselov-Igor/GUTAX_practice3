@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('text');
             $table->tinyInteger('rating');
-            $table->string('img');
+            $table->string('img')->unique();
             $table->foreignId('id_author')->constrained('users');
             $table->timestamps();
         });

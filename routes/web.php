@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\CaptchaController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,8 +17,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', ['location' => (new App\Http\Controllers\CityController())->getUserLocation(),
+        'cities' => \App\Models\City::orderBy('name')->get(),
+        'feedbacks' => \App\Models\Feedback::all()]);
 });
+
+Route::group(['middleware' => 'auth'],function(){
+    Route::get('feedback/create', [FeedbackController::class, 'gotoCreate'])->name('gotoFeedbackCreate');
+});
+
+Route::get('getUserLocation', [CityController::class, 'getUserLocation']);
+Route::get('reloadCaptcha', [CaptchaController::class, 'reloadCaptcha']);
+
+Route::get('getCityFeedbacks', [FeedbackController::class, 'getCityFeedbacks']);
 
 Auth::routes();
 

@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
+use Mews\Captcha\CaptchaServiceProvider;
+use Mews\Captcha\Facades\Captcha;
+use Torann\GeoIP\Facades\GeoIP;
+use Torann\GeoIP\GeoIPServiceProvider;
 
 return [
 
@@ -42,7 +46,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +87,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'ru',
 
     /*
     |--------------------------------------------------------------------------
@@ -168,6 +172,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        CaptchaServiceProvider::class,
+        GeoIPServiceProvider::class
     ])->toArray(),
 
     /*
@@ -183,6 +189,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        'Captcha' => Captcha::class,
+        'GeoIP' => GeoIP::class
     ])->toArray(),
 
 ];

@@ -50,9 +50,17 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
+            'fio' => ['required', 'string', 'max:255', 'regex: /([А-ЯЁ][а-яё]+[\-\s]?){3,}/'],
+            'phone' => ['required', 'regex:/^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'captcha' => ['required', 'captcha']
+        ], [
+            'password.min' => 'Пароль слишком короткий',
+            'password.confirmed' => 'Пароли не совпадают',
+            'captcha' => 'Неверная капча',
+            'phone.regex' => 'Номер введен в неверном формате. Введите номер как указано в примере +8 999 999 99 99',
+            'fio.regex' => 'ФИО введено неверно. Оно может содержать только кириллицу и пробелы'
         ]);
     }
 
@@ -65,7 +73,8 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'fio' => $data['fio'],
+            'phone' => $data['phone'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);

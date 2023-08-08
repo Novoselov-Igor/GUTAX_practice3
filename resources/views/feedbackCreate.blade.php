@@ -8,7 +8,7 @@
                     <div class="card-header">Создание отзыва</div>
 
                     <div class="card-body">
-                        <form method="POST" action="">
+                        <form method="POST" action="{{ route('sendFeedback') }}">
                             @csrf
 
                             <div class="row mb-3">
@@ -43,43 +43,45 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex mb-3">
+                            <div class="row mb-3">
                                 <label class="col-md-4 form-check text-md-end">Оценка</label>
 
-                                <div class="form-check mx-3">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault1" checked>
-                                    <label class="form-check-label" for="flexRadioDefault1">
-                                        1
-                                    </label>
-                                </div>
-                                <div class="form-check mx-3">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault2">
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        2
-                                    </label>
-                                </div>
-                                <div class="form-check mx-3">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault2">
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        3
-                                    </label>
-                                </div>
-                                <div class="form-check mx-3">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault2">
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        4
-                                    </label>
-                                </div>
-                                <div class="form-check mx-3">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault2">
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        5
-                                    </label>
+                                <div class="col-md-6 d-flex">
+                                    <div class="form-check mx-3">
+                                        <input class="form-check-input" value="1" type="radio" name="rating"
+                                               id="flexRadioDefault1" checked>
+                                        <label class="form-check-label" for="flexRadioDefault1">
+                                            1
+                                        </label>
+                                    </div>
+                                    <div class="form-check mx-3">
+                                        <input class="form-check-input" value="2" type="radio" name="rating"
+                                               id="flexRadioDefault2">
+                                        <label class="form-check-label" for="flexRadioDefault2">
+                                            2
+                                        </label>
+                                    </div>
+                                    <div class="form-check mx-3">
+                                        <input class="form-check-input" value="3" type="radio" name="rating"
+                                               id="flexRadioDefault3">
+                                        <label class="form-check-label" for="flexRadioDefault3">
+                                            3
+                                        </label>
+                                    </div>
+                                    <div class="form-check mx-3">
+                                        <input class="form-check-input" value="4" type="radio" name="rating"
+                                               id="flexRadioDefault4">
+                                        <label class="form-check-label" for="flexRadioDefault4">
+                                            4
+                                        </label>
+                                    </div>
+                                    <div class="form-check mx-3">
+                                        <input class="form-check-input" value="5" type="radio" name="rating"
+                                               id="flexRadioDefault5">
+                                        <label class="form-check-label" for="flexRadioDefault5">
+                                            5
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -99,10 +101,38 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <label for="city" class="col-md-4 col-form-label text-md-end">Город</label>
+                            <div class="d-flex mb-3">
+                                <label for="city" class="col-md-4 col-form-label text-md-end" style="margin-right: 5%">Город</label>
 
+                                <div class="col-md-6">
+                                    <select id="city" class="searchable w-75" aria-label="Default select example">
+                                        <option disabled selected>Выберите город</option>
+                                        @foreach($cities as $city)
+                                            <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
 
+                            <div class="d-flex mb-3 justify-content-center">
+                                <button id="cityNotFound" class="btn" type="button">Не нашли нужный город?</button>
+                            </div>
+                            <div id="addCity" class="row mb-3" hidden>
+                                <label for="newCity" class="col-md-4 col-form-label text-md-end">Добавить город</label>
+                                <div class="col-md-6 d-flex">
+                                    <input id="newCity" type="text" class="form-control" name="newCity">
+                                    <button id="btnAddCity" class="btn btn-danger mx-3" type="button">Добавить</button>
+                                </div>
+                            </div>
+
+                            <div id="showFoundCity" class="row mb-3" hidden>
+                                <div class="col-md-6 d-flex m-auto">
+                                    <p class="my-0 mx-1">
+                                        <nobr>Вы имели в виду этот город:</nobr>
+                                    </p>
+                                    <p class="m-0" id="foundCity"></p>
+                                    <button id="rightCity" class="btn btn-danger mx-3" type="button">Да</button>
+                                </div>
                             </div>
 
                             <div class="row mb-0">
@@ -119,4 +149,44 @@
         </div>
     </div>
 
+    <script>
+        $('#cityNotFound').on('click', function () {
+            document.getElementById('addCity').hidden = false;
+        })
+
+        $('#btnAddCity').on('click', function () {
+            let city = $('#newCity').val();
+
+            $.ajax({
+                url: '/feedback/checkCity',
+                type: 'get',
+                data: {
+                    'city': city
+                },
+                success: function (data) {
+                    console.log(data['location']);
+
+                    document.getElementById('showFoundCity').hidden = false;
+
+                    $('#foundCity').html(data['location'][0].local_names['ru']);
+                }
+            })
+        })
+
+        $('#rightCity').on('click', function () {
+            let city = $('#foundCity').html();
+            $.ajax({
+                url: '/feedback/addNewCity',
+                type: 'post',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    'city': city
+                },
+                success: function (response) {
+                    location.reload();
+                    alert(response['success']);
+                }
+            })
+        })
+    </script>
 @endsection

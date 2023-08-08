@@ -3,6 +3,8 @@
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\FeedbackController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,9 +24,12 @@ Route::get('/', function () {
         'feedbacks' => \App\Models\Feedback::all()]);
 });
 
-Route::group(['middleware' => 'auth'],function(){
-    Route::get('feedback/create', [FeedbackController::class, 'gotoCreate'])->name('gotoFeedbackCreate');
-});
+Route::get('feedback/create', [FeedbackController::class, 'gotoCreate'])
+    ->middleware('auth', 'verified')->name('gotoFeedbackCreate');
+Route::get('feedback/checkCity', [CityController::class, 'checkCity'])->name('checkCity');
+Route::post('feedback/addNewCity', [CityController::class, 'addNewCity'])->name('addNewCity');
+Route::post('feedback/created', [FeedbackController::class, 'sendFeedback'])->name('sendFeedback');
+
 
 Route::get('getUserLocation', [CityController::class, 'getUserLocation']);
 Route::get('reloadCaptcha', [CaptchaController::class, 'reloadCaptcha']);
@@ -32,5 +37,20 @@ Route::get('reloadCaptcha', [CaptchaController::class, 'reloadCaptcha']);
 Route::get('getCityFeedbacks', [FeedbackController::class, 'getCityFeedbacks']);
 
 Auth::routes();
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return redirect('/home');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

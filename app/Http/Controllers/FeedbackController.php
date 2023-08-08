@@ -2,22 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
 
 class FeedbackController extends Controller
 {
-    public function gotoCreate(){
-        return view('feedbackCreate');
-    }
-
-    protected function getAuthors($feedbacks)
+    public function gotoCreate()
     {
-        $authors = [];
-        foreach ($feedbacks as $feedback){
-            array_push($authors, $feedback->author);
-        }
-        return $authors;
+        return view('feedbackCreate', ['cities' => City::all()]);
     }
 
     public function getCityFeedbacks(Request $request)
@@ -31,5 +24,19 @@ class FeedbackController extends Controller
         } catch (\Throwable $exception) {
             return response()->json(['feedbacks' => $exception->getMessage()]);
         }
+    }
+
+    public function sendFeedback(Request $request)
+    {
+        dd($request->all(), geoip($request->ip()));
+    }
+
+    protected function getAuthors($feedbacks)
+    {
+        $authors = [];
+        foreach ($feedbacks as $feedback) {
+            array_push($authors, $feedback->author);
+        }
+        return $authors;
     }
 }

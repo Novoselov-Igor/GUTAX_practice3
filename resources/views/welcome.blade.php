@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        @if(Auth::user() !== null)
+        @if(Auth::check() && Auth::user()->hasVerifiedEmail())
             <a class="page-link" href="{{ route('gotoFeedbackCreate') }}">Написать отзыв</a>
         @endif
 

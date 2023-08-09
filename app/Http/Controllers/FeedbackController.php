@@ -74,6 +74,18 @@ class FeedbackController extends Controller
         return redirect('/');
     }
 
+    protected function updateFeedback($id, $data, $cityId)
+    {
+        Feedback::find($id)->update([
+            'id_city' => $cityId,
+            'title' => $data['name'],
+            'text' => $data['text'],
+            'rating' => $data['rating'],
+            'img' => $data['image'],
+            'id_author' => $data['id_author']
+        ]);
+    }
+
     protected function addFeedbackToAll($data)
     {
         $cities = City::all();
@@ -106,17 +118,5 @@ class FeedbackController extends Controller
     public function getSession()
     {
         return response()->json(['session' => Session::get('idCity')]);
-    }
-
-    protected function updateFeedback($id, $data, $cityId)
-    {
-        Feedback::find($id)->update([
-            'id_city' => $cityId,
-            'title' => $data['name'],
-            'text' => $data['text'],
-            'rating' => $data['rating'],
-            'img' => $data['image'],
-            'id_author' => $data['id_author']
-        ]);
     }
 }

@@ -118,7 +118,7 @@
                                                 <p>Телефон: <span id="authorPhone">` + data['feedbacks'][i].author.phone + `</span></p>
                                                 <div class="d-flex"><p class="m-0 py-2">Все отзывы этого автора:
                                                 <form method="get" action="{{ route('gotoUserFeedbacks') }}">
-                                                    <input name="id" value="`+ data['feedbacks'][i].author.id +`" hidden>
+                                                    <input name="id" value="` + data['feedbacks'][i].author.id + `" hidden>
                                                     <button class="btn btn-danger mx-2" type="submit">Посмотреть</button>
                                                 </form></p></div>
                                             </div>
@@ -133,8 +133,8 @@
                             `<div class="card mb-3">
                                 <div class="card-body">
                                     <div class="mb-3">`
-                                        + element +
-                                        `<p class="m-0" id="rating">Оценка: ` + data['feedbacks'][i].rating + `</p>
+                            + element +
+                            `<p class="m-0" id="rating">Оценка: ` + data['feedbacks'][i].rating + `</p>
                                     </div>
                                     <div class="text-center">
                                         <img src="{{ asset('public/storage/feedback_images') }}` + '/' + data['feedbacks'][i].img + `" alt="image" width="25%" class="img-thumbnail">

@@ -89,7 +89,8 @@
                                 <label for="image" class="col-md-4 col-form-label text-md-end">Фото</label>
 
                                 <div class="col-md-6">
-                                    <input id="image" type="file" accept="image/*" class="form-control" name="image" required>
+                                    <input id="image" type="file" accept="image/*" class="form-control" name="image"
+                                           required>
                                 </div>
                             </div>
 
@@ -112,7 +113,7 @@
     </div>
 
     <script>
-        $(window).ready(function (){
+        $(window).ready(function () {
             $('#{{ $oldFeedback['rating'] }}').prop('checked', true);
         })
     </script>

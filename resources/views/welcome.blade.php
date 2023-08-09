@@ -34,6 +34,12 @@
                 <a class="btn btn-secondary" id="sendFeedback" href="{{ route('gotoFeedbackCreate') }}" hidden>
                     Написать отзыв</a>
             </div>
+        @else
+            <div class="d-flex justify-content-end w-75 mb-3">
+                <button class="btn btn-secondary" id="sendFeedback" hidden>
+                    Войдите чтобы написать отзыв
+                </button>
+            </div>
         @endif
 
         <div class="w-75" id="feedbacks" hidden>
@@ -44,16 +50,19 @@
 
     <script>
         $(window).ready(function () {
-            let cookie = document.cookie.split(';');
-            cookie = cookie[0].split('=');
-            console.log(cookie[1]);
-            if (cookie[0] !== 'idCity') {
-                $('#yourCityQuest').modal('toggle');
-            } else {
-                document.getElementById('sendFeedback').hidden = false;
-                getFeedbacks(cookie[1]);
-            }
-
+            $.ajax({
+                url: '/getSession',
+                type: 'get',
+                success: function (data) {
+                    console.log(data['session']);
+                    if (data['session'] === null) {
+                        $('#yourCityQuest').modal('toggle');
+                    } else {
+                        document.getElementById('sendFeedback').hidden = false;
+                        getFeedbacks(data['session']);
+                    }
+                }
+            })
         });
 
         $('#cityTrue').on('click', function () {
@@ -73,7 +82,6 @@
                 },
                 success: function (data) {
                     getFeedbacks(data['cityId']);
-                    location.reload();
                 }
             })
         });

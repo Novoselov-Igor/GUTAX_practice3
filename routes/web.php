@@ -35,6 +35,7 @@ Route::get('getUserLocation', [CityController::class, 'getUserLocation']);
 Route::get('reloadCaptcha', [CaptchaController::class, 'reloadCaptcha']);
 
 Route::get('getCityFeedbacks', [FeedbackController::class, 'getCityFeedbacks']);
+Route::get('getSession', [FeedbackController::class, 'getSession']);
 
 Auth::routes();
 Route::get('/email/verify', function () {

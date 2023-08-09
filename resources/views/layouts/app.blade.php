@@ -78,8 +78,7 @@
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();
-                                                     document.cookie = 'NAME = cityId; path=/; expires = -1'">
+                                                     document.getElementById('logout-form').submit();">
                                     Выйти
                                 </a>
 

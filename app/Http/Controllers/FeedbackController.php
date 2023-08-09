@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\City;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class FeedbackController extends Controller
 {
@@ -16,7 +17,7 @@ class FeedbackController extends Controller
     public function getCityFeedbacks(Request $request)
     {
         try {
-            setcookie('idCity', $request->input('id'), time() + 7200);
+            Session::put('idCity', $request->input('id'));
             $feedbacks = Feedback::where('id_city', $request->input('id'))->get();
             return response()->json(['feedbacks' => $feedbacks,
                 'city' => $feedbacks[0]->city->name,
@@ -58,6 +59,11 @@ class FeedbackController extends Controller
         }
 
         return redirect('/');
+    }
+
+    public function getSession()
+    {
+        return response()->json(['session' => Session::get('idCity')]);
     }
 
     protected function addFeedbackToAll($data)

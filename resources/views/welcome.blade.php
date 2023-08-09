@@ -20,6 +20,7 @@
                             Ваш город {{ $location }}?
                         </div>
                         <div class="modal-footer">
+                            <input id="location" value="{{ $location }}" hidden>
                             <button type="button" id="cityTrue" class="btn btn-success">Да</button>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Нет</button>
                         </div>
@@ -28,45 +29,64 @@
             </div>
         </div>
 
-        <div class="w-75" id="feedbacks" hidden>
-            <div class="card">
-                <div class="card-body">
-                    <div class="mb-3">
-                        <p class="fw-bold m-0" id="author"></p>
-                        <p class="m-0" id="rating"></p>
-                    </div>
-                    <div class="text-center">
-                        <div id="imageHolder"></div>
-                        <h5 class="m-0" id="title"></h5>
-                        <p class="m-0 text-start" id="text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         @if(Auth::check() && Auth::user()->hasVerifiedEmail())
-            <a class="page-link" href="{{ route('gotoFeedbackCreate') }}">Написать отзыв</a>
+            <div class="d-flex justify-content-end w-75 mb-3">
+                <a class="btn btn-secondary" id="sendFeedback" href="{{ route('gotoFeedbackCreate') }}" hidden>
+                    Написать отзыв</a>
+            </div>
         @endif
+
+        <div class="w-75" id="feedbacks" hidden>
+        </div>
 
 
     </div>
 
     <script>
         $(window).ready(function () {
-            $('#yourCityQuest').modal('toggle');
+            let cookie = document.cookie.split(';');
+            cookie = cookie[0].split('=');
+            if (cookie[0] !== 'idCity') {
+                $('#yourCityQuest').modal('toggle');
+            } else {
+                getFeedbacks(cookie[1]);
+            }
+
         });
 
         $('#cityTrue').on('click', function () {
             $('#yourCityQuest').modal('toggle');
             $('.select2').hide();
+            document.getElementById('sendFeedback').hidden = false;
+
+            let city = $('#location').val();
+            console.log(city);
+
+            $.ajax({
+                url: '/feedback/addNewCity',
+                type: 'post',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    'city': city
+                },
+                success: function () {
+                    location.reload();
+                }
+            })
         });
 
         $('select').change(function () {
+            document.getElementById('sendFeedback').hidden = false;
+
+            getFeedbacks($(this).val());
+        });
+
+        function getFeedbacks(cityId) {
             $.ajax({
                 url: 'getCityFeedbacks',
                 type: 'get',
                 data: {
-                    'id': $(this).val()
+                    'id': cityId
                 },
                 success: function (data) {
                     $('.select2').hide();
@@ -74,16 +94,25 @@
                     document.getElementById('feedbacks').hidden = false;
                     console.log(data['feedbacks'][0].author.fio);
                     for (let i = 0; i < data['feedbacks'].length; i++) {
-                        $('#imageHolder').append(
-                            `<img src="public/feedback_images/` + data['feedbacks'][i].img + `" alt="image" width="50%" class="img-thumbnail">`
+                        $('#feedbacks').append(
+                            `<div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <p class="fw-bold m-0">` + data['feedbacks'][i].author.fio + `</p>
+                                        <p class="m-0" id="rating">Оценка: ` + data['feedbacks'][i].rating + `</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <img src="{{ asset('public/storage/feedback_images') }}` + '/' + data['feedbacks'][i].img + `" alt="image" width="50%" class="img-thumbnail">
+                                        <h5 class="m-0">` + data['feedbacks'][i].title + `</h5>
+                                        <p class="m-0 text-start">` + data['feedbacks'][i].text + `</p>
+                                    </div>
+                                </div>
+                            </div>`
                         );
-                        $('#author').html(data['feedbacks'][i].author.fio);
-                        $('#rating').html('Оценка: ' + data['feedbacks'][i].rating);
-                        $('#title').html(data['feedbacks'][i].title);
-                        $('#text').html(data['feedbacks'][i].text);
                     }
                 }
             })
-        });
+
+        }
     </script>
 @endsection

@@ -8,7 +8,7 @@
                     <div class="card-header">Создание отзыва</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('sendFeedback') }}">
+                        <form method="POST" action="{{ route('sendFeedback') }}" enctype="multipart/form-data">
                             @csrf
 
                             <div class="row mb-3">
@@ -89,15 +89,7 @@
                                 <label for="image" class="col-md-4 col-form-label text-md-end">Фото</label>
 
                                 <div class="col-md-6">
-                                    <input id="image" accept="image/*" type="file"
-                                           class="form-control @error('image') is-invalid @enderror" name="image"
-                                           value="{{ old('image') }}" required autofocus>
-
-                                    @error('image')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
+                                    <input id="image" type="file" accept="image/*" class="form-control" name="image" required>
                                 </div>
                             </div>
 
@@ -105,8 +97,8 @@
                                 <label for="city" class="col-md-4 col-form-label text-md-end" style="margin-right: 5%">Город</label>
 
                                 <div class="col-md-6">
-                                    <select id="city" class="searchable w-75" aria-label="Default select example">
-                                        <option disabled selected>Выберите город</option>
+                                    <select multiple="multiple" id="city" name="cities[]" class="searchable w-75"
+                                            aria-label="Default select example">
                                         @foreach($cities as $city)
                                             <option value="{{ $city->id }}">{{ $city->name }}</option>
                                         @endforeach
@@ -137,6 +129,7 @@
 
                             <div class="row mb-0">
                                 <div class="col-md-8 offset-md-4">
+                                    <input type="text" value="{{ Auth::user()->id }}" name="id_author" hidden>
                                     <button type="submit" class="btn btn-danger">
                                         Создать
                                     </button>
@@ -168,7 +161,7 @@
 
                     document.getElementById('showFoundCity').hidden = false;
 
-                    $('#foundCity').html(data['location'][0].local_names['ru']);
+                    $('#foundCity').html(data['location'][0].name);
                 }
             })
         })

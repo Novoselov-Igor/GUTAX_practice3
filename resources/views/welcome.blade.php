@@ -44,8 +44,6 @@
 
         <div class="w-75" id="feedbacks" hidden>
         </div>
-
-
     </div>
 
     <script>
@@ -104,13 +102,39 @@
                     $('.select2').hide();
                     $('#welcome').html(data['feedbacks'][0].city.name);
                     document.getElementById('feedbacks').hidden = false;
+
+                    let element;
+
                     for (let i = 0; i < data['feedbacks'].length; i++) {
+                        if (userIsRegisteredAndVerified()) {
+                            element = `<div class="modal" id="authorModal" tabindex="-1" role="dialog" aria-labelledby="authorModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="authorModalLabel">Информация об авторе</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Email: <span id="authorEmail">` + data['feedbacks'][i].author.email + `</span></p>
+                                                <p>Телефон: <span id="authorPhone">` + data['feedbacks'][i].author.phone + `</span></p>
+                                                <div class="d-flex"><p class="m-0 py-2">Все отзывы этого автора:
+                                                <form method="get" action="{{ route('gotoUserFeedbacks') }}">
+                                                    <input name="id" value="`+ data['feedbacks'][i].author.id +`" hidden>
+                                                    <button class="btn btn-danger mx-2" type="submit">Посмотреть</button>
+                                                </form></p></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>` + `<button class="fw-bold p-0 btn" id="authorInfo">` + data['feedbacks'][i].author.fio + `</button>`;
+                        } else {
+                            element = `<p class="m-0 fw-bold">` + data['feedbacks'][i].author.fio + `</p>`;
+                        }
+
                         $('#feedbacks').append(
                             `<div class="card mb-3">
                                 <div class="card-body">
-                                    <div class="mb-3">
-                                        <p class="fw-bold m-0">` + data['feedbacks'][i].author.fio + `</p>
-                                        <p class="m-0" id="rating">Оценка: ` + data['feedbacks'][i].rating + `</p>
+                                    <div class="mb-3">`
+                                        + element +
+                                        `<p class="m-0" id="rating">Оценка: ` + data['feedbacks'][i].rating + `</p>
                                     </div>
                                     <div class="text-center">
                                         <img src="{{ asset('public/storage/feedback_images') }}` + '/' + data['feedbacks'][i].img + `" alt="image" width="25%" class="img-thumbnail">
@@ -123,7 +147,15 @@
                     }
                 }
             })
+        }
 
+        $('#feedbacks').on('click', '#authorInfo', function () {
+            console.log('test');
+            $('#authorModal').modal('toggle');
+        })
+
+        function userIsRegisteredAndVerified() {
+            return '{{ Auth::check() && Auth::user()->hasVerifiedEmail() }}'
         }
     </script>
 @endsection

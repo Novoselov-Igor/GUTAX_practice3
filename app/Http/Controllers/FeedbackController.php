@@ -14,6 +14,16 @@ class FeedbackController extends Controller
         return view('feedbackCreate', ['cities' => City::all()]);
     }
 
+    public function gotoChange(Request $request)
+    {
+        return view('feedbackChange', ['oldFeedback' => $request->all(), 'cities' => City::all()]);
+    }
+
+    public function gotoUserFeedbacks(Request $request)
+    {
+        return view('usersFeedbacks', ['feedbacks' => Feedback::where('id_author', $request->input('id'))->get()]);
+    }
+
     public function getCityFeedbacks(Request $request)
     {
         try {
@@ -52,18 +62,16 @@ class FeedbackController extends Controller
 
         $validatedData['image'] = $imageName;
 
-        if ($request->input('cities') === null) {
-            $this->addFeedbackToAll($validatedData);
-        } else {
-            $this->addFeedbackToSome($validatedData, $request->input('cities'));
+        if ($request->input('case') === 'change') {
+            $this->updateFeedback($request->input('id'), $validatedData, $request->input('cityId'));
+        } elseif ($request->input('case') === 'create') {
+            if ($request->input('cities') === null) {
+                $this->addFeedbackToAll($validatedData);
+            } else {
+                $this->addFeedbackToSome($validatedData, $request->input('cities'));
+            }
         }
-
         return redirect('/');
-    }
-
-    public function getSession()
-    {
-        return response()->json(['session' => Session::get('idCity')]);
     }
 
     protected function addFeedbackToAll($data)
@@ -93,5 +101,22 @@ class FeedbackController extends Controller
                 'id_author' => $data['id_author']
             ]);
         }
+    }
+
+    public function getSession()
+    {
+        return response()->json(['session' => Session::get('idCity')]);
+    }
+
+    protected function updateFeedback($id, $data, $cityId)
+    {
+        Feedback::find($id)->update([
+            'id_city' => $cityId,
+            'title' => $data['name'],
+            'text' => $data['text'],
+            'rating' => $data['rating'],
+            'img' => $data['image'],
+            'id_author' => $data['id_author']
+        ]);
     }
 }

@@ -17,7 +17,7 @@
                                 <div class="col-md-6">
                                     <input id="name" type="text"
                                            class="form-control @error('name') is-invalid @enderror" name="name"
-                                           value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                           value="{{ $oldFeedback['title'] }}" required autocomplete="name" autofocus>
 
                                     @error('name')
                                     <span class="invalid-feedback" role="alert">
@@ -33,7 +33,7 @@
                                 <div class="col-md-6">
                                     <textarea id="text" name="text"
                                               class="form-control @error('text') is-invalid @enderror"
-                                              required></textarea>
+                                              required>{{ $oldFeedback['text'] }}</textarea>
 
                                     @error('text')
                                     <span class="invalid-feedback" role="alert">
@@ -49,36 +49,36 @@
                                 <div class="col-md-6 d-flex">
                                     <div class="form-check mx-3">
                                         <input class="form-check-input" value="1" type="radio" name="rating"
-                                               id="flexRadioDefault1" checked>
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                               id="1" checked>
+                                        <label class="form-check-label" for="1">
                                             1
                                         </label>
                                     </div>
                                     <div class="form-check mx-3">
                                         <input class="form-check-input" value="2" type="radio" name="rating"
-                                               id="flexRadioDefault2">
-                                        <label class="form-check-label" for="flexRadioDefault2">
+                                               id="2">
+                                        <label class="form-check-label" for="2">
                                             2
                                         </label>
                                     </div>
                                     <div class="form-check mx-3">
                                         <input class="form-check-input" value="3" type="radio" name="rating"
-                                               id="flexRadioDefault3">
-                                        <label class="form-check-label" for="flexRadioDefault3">
+                                               id="3">
+                                        <label class="form-check-label" for="3">
                                             3
                                         </label>
                                     </div>
                                     <div class="form-check mx-3">
                                         <input class="form-check-input" value="4" type="radio" name="rating"
-                                               id="flexRadioDefault4">
-                                        <label class="form-check-label" for="flexRadioDefault4">
+                                               id="4">
+                                        <label class="form-check-label" for="4">
                                             4
                                         </label>
                                     </div>
                                     <div class="form-check mx-3">
                                         <input class="form-check-input" value="5" type="radio" name="rating"
-                                               id="flexRadioDefault5">
-                                        <label class="form-check-label" for="flexRadioDefault5">
+                                               id="5">
+                                        <label class="form-check-label" for="5">
                                             5
                                         </label>
                                     </div>
@@ -93,46 +93,14 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex mb-3">
-                                <label for="city" class="col-md-4 col-form-label text-md-end" style="margin-right: 5%">Город</label>
-
-                                <div class="col-md-6">
-                                    <select multiple="multiple" id="city" name="cities[]" class="searchable w-75"
-                                            aria-label="Default select example">
-                                        @foreach($cities as $city)
-                                            <option value="{{ $city->id }}">{{ $city->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="d-flex mb-3 justify-content-center">
-                                <button id="cityNotFound" class="btn" type="button">Не нашли нужный город?</button>
-                            </div>
-                            <div id="addCity" class="row mb-3" hidden>
-                                <label for="newCity" class="col-md-4 col-form-label text-md-end">Добавить город</label>
-                                <div class="col-md-6 d-flex">
-                                    <input id="newCity" type="text" class="form-control" name="newCity">
-                                    <button id="btnAddCity" class="btn btn-danger mx-3" type="button">Добавить</button>
-                                </div>
-                            </div>
-
-                            <div id="showFoundCity" class="row mb-3" hidden>
-                                <div class="col-md-6 d-flex m-auto">
-                                    <p class="my-0 mx-1">
-                                        <nobr>Вы имели в виду этот город:</nobr>
-                                    </p>
-                                    <p class="m-0" id="foundCity"></p>
-                                    <button id="rightCity" class="btn btn-danger mx-3" type="button">Да</button>
-                                </div>
-                            </div>
-
                             <div class="row mb-0">
                                 <div class="col-md-8 offset-md-4">
                                     <input type="text" value="{{ Auth::user()->id }}" name="id_author" hidden>
-                                    <input type="text" value="create" name="case" hidden>
+                                    <input type="text" value="change" name="case" hidden>
+                                    <input type="text" value="{{ $oldFeedback['id'] }}" name="id" hidden>
+                                    <input type="text" value="{{ $oldFeedback['city'] }}" name="cityId" hidden>
                                     <button type="submit" class="btn btn-danger">
-                                        Создать
+                                        Изменить
                                     </button>
                                 </div>
                             </div>
@@ -144,43 +112,8 @@
     </div>
 
     <script>
-        $('#cityNotFound').on('click', function () {
-            document.getElementById('addCity').hidden = false;
-        })
-
-        $('#btnAddCity').on('click', function () {
-            let city = $('#newCity').val();
-
-            $.ajax({
-                url: '/feedback/checkCity',
-                type: 'get',
-                data: {
-                    'city': city
-                },
-                success: function (data) {
-                    console.log(data['location']);
-
-                    document.getElementById('showFoundCity').hidden = false;
-
-                    $('#foundCity').html(data['location'][0].name);
-                }
-            })
-        })
-
-        $('#rightCity').on('click', function () {
-            let city = $('#foundCity').html();
-            $.ajax({
-                url: '/feedback/addNewCity',
-                type: 'post',
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    'city': city
-                },
-                success: function (response) {
-                    location.reload();
-                    alert(response['success']);
-                }
-            })
+        $(window).ready(function (){
+            $('#{{ $oldFeedback['rating'] }}').prop('checked', true);
         })
     </script>
 @endsection

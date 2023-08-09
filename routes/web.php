@@ -26,6 +26,11 @@ Route::get('/', function () {
 
 Route::get('feedback/create', [FeedbackController::class, 'gotoCreate'])
     ->middleware('auth', 'verified')->name('gotoFeedbackCreate');
+Route::get('feedback/change', [FeedbackController::class, 'gotoChange'])
+    ->middleware('auth', 'verified')->name('gotoFeedbackChange');
+Route::get('user/feedbacks', [FeedbackController::class, 'gotoUserFeedbacks'])
+    ->middleware('auth', 'verified')->name('gotoUserFeedbacks');
+
 Route::get('feedback/checkCity', [CityController::class, 'checkCity'])->name('checkCity');
 Route::post('feedback/addNewCity', [CityController::class, 'addNewCity'])->name('addNewCity');
 Route::post('feedback/created', [FeedbackController::class, 'sendFeedback'])->name('sendFeedback');

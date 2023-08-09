@@ -16,7 +16,7 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css"/>
     <style>
-        .select2-container--bootstrap-5.select2-container--open.select2-container--below .select2-selection{
+        .select2-container--bootstrap-5.select2-container--open.select2-container--below .select2-selection {
             color: black;
         }
     </style>
@@ -50,7 +50,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
-
+                    @if(Auth::check() && Auth::user()->hasVerifiedEmail())
+                        <li class="nav-item">
+                            <form method="get" action="{{ route('gotoUserFeedbacks') }}">
+                                <input name="id" value="{{ Auth::user()->id }}" hidden>
+                                <button class="nav-link" type="submit">Посмотреть свои отзывы</button>
+                            </form>
+                        </li>
+                    @endif
                 </ul>
 
                 <!-- Right Side Of Navbar -->

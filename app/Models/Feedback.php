@@ -19,11 +19,12 @@ class Feedback extends Model
         'id_author',
     ];
 
-    public function city() : HasOne
+    public function city(): HasOne
     {
         return $this->hasOne(City::class, 'id', 'id_city');
     }
-    public function author() : HasOne
+
+    public function author(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'id_author');
     }

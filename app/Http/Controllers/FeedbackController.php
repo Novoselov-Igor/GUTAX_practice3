@@ -17,7 +17,7 @@ class FeedbackController extends Controller
     {
         try {
             setcookie('idCity', $request->input('id'), time() + 7200);
-            $feedbacks = Feedback::where('id_city', session('idCity'))->get();
+            $feedbacks = Feedback::where('id_city', $request->input('id'))->get();
             return response()->json(['feedbacks' => $feedbacks,
                 'city' => $feedbacks[0]->city->name,
                 'author' => $this->getAuthors($feedbacks)]);

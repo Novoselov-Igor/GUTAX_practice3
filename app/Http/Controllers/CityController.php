@@ -35,9 +35,11 @@ class CityController extends Controller
         $cities = City::all();
 
         $fl = false;
+        $cityId = -1;
         foreach ($cities as $city) {
             if ($city->name === $cityName) {
                 $fl = true;
+                $cityId = $city->id;
             }
         }
 
@@ -45,8 +47,10 @@ class CityController extends Controller
             City::create([
                 'name' => $cityName
             ]);
-            return response()->json(['success' => 'Новый город бы успешно добавлен']);
+            $cityId = City::latest()->first();
+            $cityId = $cityId->id;
+            return response()->json(['success' => 'Новый город бы успешно добавлен', 'cityId' => $cityId]);
         }
-        return response()->json(['success' => 'Такой город уже существует']);
+        return response()->json(['success' => 'Такой город уже существует', 'cityId' => $cityId]);
     }
 }

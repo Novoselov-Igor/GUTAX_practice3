@@ -46,9 +46,11 @@
         $(window).ready(function () {
             let cookie = document.cookie.split(';');
             cookie = cookie[0].split('=');
+            console.log(cookie[1]);
             if (cookie[0] !== 'idCity') {
                 $('#yourCityQuest').modal('toggle');
             } else {
+                document.getElementById('sendFeedback').hidden = false;
                 getFeedbacks(cookie[1]);
             }
 
@@ -69,7 +71,8 @@
                     "_token": "{{ csrf_token() }}",
                     'city': city
                 },
-                success: function () {
+                success: function (data) {
+                    getFeedbacks(data['cityId']);
                     location.reload();
                 }
             })
@@ -89,10 +92,10 @@
                     'id': cityId
                 },
                 success: function (data) {
+                    console.log(data)
                     $('.select2').hide();
                     $('#welcome').html(data['feedbacks'][0].city.name);
                     document.getElementById('feedbacks').hidden = false;
-                    console.log(data['feedbacks'][0].author.fio);
                     for (let i = 0; i < data['feedbacks'].length; i++) {
                         $('#feedbacks').append(
                             `<div class="card mb-3">
@@ -102,7 +105,7 @@
                                         <p class="m-0" id="rating">Оценка: ` + data['feedbacks'][i].rating + `</p>
                                     </div>
                                     <div class="text-center">
-                                        <img src="{{ asset('public/storage/feedback_images') }}` + '/' + data['feedbacks'][i].img + `" alt="image" width="50%" class="img-thumbnail">
+                                        <img src="{{ asset('public/storage/feedback_images') }}` + '/' + data['feedbacks'][i].img + `" alt="image" width="25%" class="img-thumbnail">
                                         <h5 class="m-0">` + data['feedbacks'][i].title + `</h5>
                                         <p class="m-0 text-start">` + data['feedbacks'][i].text + `</p>
                                     </div>
